@@ -1,2 +1,2 @@
 # JavaScript
-here i putting my JS projects 
+here i put my JS projects 

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.1/css/all.min.css" integrity="sha512-9my9Mb2+0YO+I4PUCSwUYO7sEK21Y0STBAiFEYoWtd2VzLEZZ4QARDrZ30hdM1GlioHJ8o8cWQiy8IAb1hy/Hg==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel= "stylesheet" href="style.css">
+</head>
+<body>
+    
+<div class="main_div">
+    <div class="music_container">
+        <h2 id="title">O Antava</h2>
+        <h3 id="artist">Indravati Chauhan</h3>
+        <div class="img_container">
+            <img src="images/song1.jpg" id="img" alt="O Antava">
+        </div>
+        <!-- <audio src="songs/song1.mp3" controls></audio> -->
+        <audio src="songs/song1.mp3" id="audio"></audio>
+
+        <!-- progress bar -->
+        <div class="progressbar_container" id="progress_container">
+            <div class="progress_duration_meter">
+                <div id="current_time">0:00</div>
+                <div id="duration">3:47</div>
+            </div>
+            <div class="progress_div" id="progress_div">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+
+        <!-- song controls -->
+        <div class="music_controls">
+            <i class="fas fa-backward" id="prev" title = "Previous"></i>
+            <i class="fas fa-play main_button" id="play" title = "Play"></i>
+            <i class="fas fa-forward" id="next" title = "Next"></i>
+            
+            
+        </div>
+
+        <!-- volume control -->
+        <div class="volume_controls">
+            <i class="fa-solid fa-volume-high" id="vol_high" title="increase"></i>
+            <i class="fa-solid fa-volume-low" id="vol_low" title="decrease"></i>
+            <i class="fa-solid fa-volume-xmark" id="mute" title="mute"></i>
+        
+        </div>
+    </div>
+</div>
+
+<script>
+    const music = document.querySelector("audio");
+    const image = document.querySelector("img");
+    const play = document.getElementById("play");
+    const artist = document.getElementById("artist");
+    const title = document.getElementById("title");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+
+    let progress = document.getElementById('progress');
+    let t_duration = document.getElementById('duration')
+    let t_current_time = document.getElementById('current_time')
+    const progress_div = document.getElementById('progress_div');
+
+    let vol_high = document.getElementById("vol_high");
+    let vol_low = document.getElementById("vol_low");
+    let mute = document.getElementById("mute");
+    const audio = document.getElementById("audio");
+
+
+    const songs = [
+        {
+        name: "song1",
+        title: "O Antava",
+        artist: "Indravati Chauhan",
+        },
+        {
+        name: "song2",
+        title: "Gore Gore Mukhde pe",
+        artist: "Udit Narayan Alka Yagnik",
+        },
+        {
+        name: "song3",
+        title: "Excuses",
+        artist: "AP Dhillon",
+        },
+]
+
+    let flagplaying = false;
+
+    // for playing the song
+    const playMusic = () => {
+        flagplaying = true;
+        music.play();
+        play.classList.replace('fa-play', "fa-pause");
+        image.classList.add("doanimate");
+    };
+
+    // to pause the song
+    const pauseMusic = () => {
+        flagplaying = false;
+        music.pause();
+        play.classList.replace("fa-pause", 'fa-play');
+        image.classList.remove("doanimate");
+    };
+
+    play.addEventListener("click", ()=> {
+      
+        flagplaying ? pauseMusic() : playMusic();
+    });
+
+    // just to change the music
+
+    const loadSong = (songs) => {
+        title.textContent = songs.title;
+        artist.textContent = songs.artist;
+        music.src = "songs/"+songs.name + ".mp3";
+        // another method is  music.src = `music${songs.name}.mp3`;
+        img.src = "images/"+songs.name + ".jpg";
+        // console.log(img.src);
+
+
+    };
+
+    indofSong = 0;
+
+    const nextSong = () => {
+        indofSong = (indofSong+1) % songs.length;
+        loadSong(songs[indofSong]);
+        playMusic();
+    }
+    const prevSong = () => {
+        indofSong = (indofSong-1 + songs.length) % songs.length;
+        loadSong(songs[indofSong]);
+        playMusic();
+    }
+
+
+    // working of progress 
+    music.addEventListener('timeupdate', (event) =>{
+
+        const {currentTime, duration} = event.srcElement;
+        let progress_time = (currentTime/duration)*100;
+        progress.style.width = `${progress_time}%`;
+        let min_dur = Math.floor(duration /60);
+        let sec_dur = Math.floor(duration % 60);
+
+        let total_dur = `${min_dur}:${sec_dur}`;
+        if(duration){
+            t_duration.textContent = `${total_dur}`;
+        }
+      
+        // updation of current duration
+        let min_d = Math.floor(currentTime /60);
+        let sec_d = Math.floor(currentTime % 60);
+
+        if(sec_d < 10){
+            sec_d = `0${sec_d}`;
+        }
+
+        let total_d = `${min_d}:${sec_d}`;
+        if(t_current_time){
+            t_current_time.textContent = `${total_d}`;
+        }
+    });
+
+    progress_div.addEventListener('click',(event) => {
+        // console.log(event);
+        // const {offsetX, clientWidth} = event.srcElement;
+        console.log(event.offsetX);
+        console.log(event.srcElement.clientWidth);
+        const {duration} = music;
+        console.log(duration);
+
+        let onclk_progress = (event.offsetX/event.srcElement.clientWidth)*duration;
+        console.log(onclk_progress);
+        music.currentTime = onclk_progress;
+
+    });
+
+    // to control the volume
+    // const {audio} = music;
+    mute.addEventListener('click',(event)=>{
+        audio.volume = 0;
+        console.log(event);
+    });
+
+    vol_high.addEventListener('click',(event)=>{
+        if(audio.volume < 1){
+            audio.volume += 0.2;
+        }else{
+            
+        };
+    });
+
+    vol_low.addEventListener('click',(event)=>{
+        if(audio.volume >= 0.2){
+            audio.volume -= 0.2;
+        }else{};
+    });
+
+
+    // if song is complete then we play next song
+    music.addEventListener('ended', nextSong);
+
+    next.addEventListener('click', nextSong);
+    prev.addEventListener('click', prevSong);
+    // loadSong(songs[2]);
+
+
+
+</script>
+
+</body>
+</html>
